@@ -54,10 +54,15 @@ The application uses environment variables for API configuration. Create a `.env
 
 ```bash
 # API Configuration
+# Option 1: Use proxy (recommended to avoid CORS issues)
+# Set this to 'true' to use relative URLs with deployment platform proxy
+VITE_USE_PROXY=true
+
+# Option 2: Direct API access (requires CORS to be enabled on API server)
 # Set this to your API base URL (without trailing slash)
 # For production, this should be the full URL like: https://hackutd2025.eog.systems
 # For development, leave empty to use Vite proxy
-VITE_API_BASE_URL=https://hackutd2025.eog.systems
+# VITE_API_BASE_URL=https://hackutd2025.eog.systems
 
 # Prophet API Configuration (optional)
 # Set this if your Prophet API is hosted separately
@@ -90,9 +95,30 @@ When deploying to production, make sure to:
 3. **Check the browser console**: If you see network errors, check the browser console for the API configuration log (if `VITE_DEBUG_API=true`) to see what URL is being used.
 
 **Common Issues:**
-- If you get "Network Error" after deployment, check that `VITE_API_BASE_URL` is set correctly
-- Make sure the API server allows CORS requests from your deployment domain
-- Verify the API URL is accessible from the browser (not just from your local machine)
+
+1. **CORS Errors**: If you get "Network Error" or CORS errors after deployment, you have two options:
+   
+   **Option A: Use a Proxy (Recommended)**
+   - Set `VITE_USE_PROXY=true` in your environment variables
+   - Configure your deployment platform to proxy `/api/*` requests to `https://hackutd2025.eog.systems/api/*`
+   - For Vercel: The `vercel.json` file is already configured
+   - For Netlify: The `netlify.toml` file is already configured
+   - This avoids CORS issues by making requests through your own domain
+   
+   **Option B: Direct API Access**
+   - Set `VITE_API_BASE_URL=https://hackutd2025.eog.systems`
+   - Ensure the API server allows CORS from your deployment domain
+   - You may need to contact the API administrator to whitelist your domain
+
+2. **Network Errors**: 
+   - Check that `VITE_API_BASE_URL` is set correctly (if not using proxy)
+   - Verify the API URL is accessible from the browser (not just from your local machine)
+   - Check browser console for detailed error messages
+
+3. **Proxy Configuration**:
+   - If using Vercel: The `vercel.json` file handles proxying automatically
+   - If using Netlify: The `netlify.toml` file handles proxying automatically
+   - For other platforms: Configure rewrites/proxies to forward `/api/*` to `https://hackutd2025.eog.systems/api/*`
 
 ## API Endpoints
 

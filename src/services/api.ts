@@ -10,9 +10,14 @@ import type {
   NeighborDto,
 } from '../types/api';
 
-// Use environment variable if set, otherwise use relative URL in development (proxied through Vite) or default production URL
+// Use environment variable if set, otherwise:
+// - In development: use relative URL (proxied through Vite)
+// - In production: use relative URL if VITE_USE_PROXY is true, otherwise use default API URL
+// This allows using deployment platform proxies (Vercel/Netlify) to avoid CORS issues
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.MODE === 'development' ? '' : 'https://hackutd2025.eog.systems');
+  (import.meta.env.MODE === 'development' || import.meta.env.VITE_USE_PROXY === 'true' 
+    ? '' 
+    : 'https://hackutd2025.eog.systems');
 
 // Log API configuration for debugging (only in development or if explicitly enabled)
 if (import.meta.env.MODE === 'development' || import.meta.env.VITE_DEBUG_API === 'true') {
@@ -37,13 +42,24 @@ api.interceptors.response.use(
   (error) => {
     if (error.code === 'ERR_NETWORK') {
       const attemptedUrl = error.config?.baseURL + error.config?.url || 'unknown';
+      const isCorsIssue = error.message?.includes('CORS') || 
+                         error.message?.includes('Access-Control') ||
+                         (error.code === 'ERR_NETWORK' && !error.response);
+      
       console.error('Network Error:', {
         code: error.code,
         url: attemptedUrl,
         baseURL: API_BASE_URL || '(relative)',
-        message: error.message
+        message: error.message,
+        isCorsIssue,
+        suggestion: isCorsIssue ? 'This is likely a CORS issue. The API server needs to allow requests from your deployment domain, or use a proxy.' : 'Check if the API server is running and accessible.'
       });
-      error.message = `Network Error: Unable to connect to the API at ${attemptedUrl}. Please check your internet connection or if the API server is running.`;
+      
+      if (isCorsIssue) {
+        error.message = `CORS Error: The API at ${attemptedUrl} is blocking requests from this domain. The API server needs to allow CORS from your deployment domain, or configure a proxy.`;
+      } else {
+        error.message = `Network Error: Unable to connect to the API at ${attemptedUrl}. Please check your internet connection or if the API server is running.`;
+      }
     } else if (error.response) {
       // Server responded with error status
       const status = error.response.status;
