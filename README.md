@@ -48,6 +48,52 @@ npm run build
 
 The built files will be in the `dist` directory.
 
+### Environment Variables
+
+The application uses environment variables for API configuration. Create a `.env` file in the root directory:
+
+```bash
+# API Configuration
+# Set this to your API base URL (without trailing slash)
+# For production, this should be the full URL like: https://hackutd2025.eog.systems
+# For development, leave empty to use Vite proxy
+VITE_API_BASE_URL=https://hackutd2025.eog.systems
+
+# Prophet API Configuration (optional)
+# Set this if your Prophet API is hosted separately
+# Default: http://localhost:5000
+VITE_PROPHET_API_URL=http://localhost:5000
+
+# Optimization API Configuration (optional)
+# Set this if your Optimization API is hosted separately
+# Default: http://localhost:5001
+VITE_OPTIMIZATION_API_URL=http://localhost:5001
+
+# Debug Mode (optional)
+# Set to 'true' to enable API configuration logging
+VITE_DEBUG_API=false
+```
+
+**Important**: Environment variables must be prefixed with `VITE_` to be accessible in the frontend code.
+
+### Deployment
+
+When deploying to production, make sure to:
+
+1. **Set the API Base URL**: Configure `VITE_API_BASE_URL` in your deployment platform's environment variables
+   - For Vercel: Add it in Project Settings → Environment Variables
+   - For Netlify: Add it in Site Settings → Build & Deploy → Environment Variables
+   - For other platforms: Set it according to their documentation
+
+2. **Rebuild after setting environment variables**: The environment variables are embedded at build time, so you need to rebuild after changing them.
+
+3. **Check the browser console**: If you see network errors, check the browser console for the API configuration log (if `VITE_DEBUG_API=true`) to see what URL is being used.
+
+**Common Issues:**
+- If you get "Network Error" after deployment, check that `VITE_API_BASE_URL` is set correctly
+- Make sure the API server allows CORS requests from your deployment domain
+- Verify the API URL is accessible from the browser (not just from your local machine)
+
 ## API Endpoints
 
 The application connects to the HackUTD 2025 API at `https://hackutd2025.eog.systems`:

@@ -10,8 +10,18 @@ import type {
   NeighborDto,
 } from '../types/api';
 
-// Use relative URL in development (proxied through Vite) or absolute in production
-const API_BASE_URL = import.meta.env.MODE === 'development' ? '' : 'https://hackutd2025.eog.systems';
+// Use environment variable if set, otherwise use relative URL in development (proxied through Vite) or default production URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.MODE === 'development' ? '' : 'https://hackutd2025.eog.systems');
+
+// Log API configuration for debugging (only in development or if explicitly enabled)
+if (import.meta.env.MODE === 'development' || import.meta.env.VITE_DEBUG_API === 'true') {
+  console.log('API Configuration:', {
+    mode: import.meta.env.MODE,
+    baseURL: API_BASE_URL || '(relative)',
+    hasEnvVar: !!import.meta.env.VITE_API_BASE_URL
+  });
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,7 +36,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === 'ERR_NETWORK') {
-      error.message = 'Network Error: Unable to connect to the API. Please check your internet connection or if the API server is running.';
+      const attemptedUrl = error.config?.baseURL + error.config?.url || 'unknown';
+      console.error('Network Error:', {
+        code: error.code,
+        url: attemptedUrl,
+        baseURL: API_BASE_URL || '(relative)',
+        message: error.message
+      });
+      error.message = `Network Error: Unable to connect to the API at ${attemptedUrl}. Please check your internet connection or if the API server is running.`;
     } else if (error.response) {
       // Server responded with error status
       const status = error.response.status;
