@@ -54,14 +54,16 @@ The application uses environment variables for API configuration. Create a `.env
 
 ```bash
 # API Configuration
-# Option 1: Use proxy (recommended to avoid CORS issues)
-# Set this to 'true' to use relative URLs with deployment platform proxy
-VITE_USE_PROXY=true
+# By default, the app uses relative URLs in production (which work with proxy configs)
+# This avoids CORS issues by making requests through your deployment domain
+
+# Option 1: Use proxy (DEFAULT - recommended to avoid CORS issues)
+# No configuration needed! The app defaults to using relative URLs.
+# Just make sure vercel.json or netlify.toml is in your project root.
 
 # Option 2: Direct API access (requires CORS to be enabled on API server)
+# Only set this if you want to bypass the proxy and connect directly
 # Set this to your API base URL (without trailing slash)
-# For production, this should be the full URL like: https://hackutd2025.eog.systems
-# For development, leave empty to use Vite proxy
 # VITE_API_BASE_URL=https://hackutd2025.eog.systems
 
 # Prophet API Configuration (optional)

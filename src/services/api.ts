@@ -12,19 +12,21 @@ import type {
 
 // Use environment variable if set, otherwise:
 // - In development: use relative URL (proxied through Vite)
-// - In production: use relative URL if VITE_USE_PROXY is true, otherwise use default API URL
+// - In production: default to relative URL (empty) to use deployment platform proxy
+//   This avoids CORS issues by making requests through your own domain
+//   Only use direct API URL if explicitly set via VITE_API_BASE_URL
 // This allows using deployment platform proxies (Vercel/Netlify) to avoid CORS issues
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.MODE === 'development' || import.meta.env.VITE_USE_PROXY === 'true' 
-    ? '' 
-    : 'https://hackutd2025.eog.systems');
+  (import.meta.env.MODE === 'development' ? '' : '');
 
-// Log API configuration for debugging (only in development or if explicitly enabled)
-if (import.meta.env.MODE === 'development' || import.meta.env.VITE_DEBUG_API === 'true') {
+// Log API configuration for debugging
+// Always log in production to help debug deployment issues
+if (import.meta.env.MODE === 'development' || import.meta.env.VITE_DEBUG_API === 'true' || import.meta.env.MODE === 'production') {
   console.log('API Configuration:', {
     mode: import.meta.env.MODE,
-    baseURL: API_BASE_URL || '(relative)',
-    hasEnvVar: !!import.meta.env.VITE_API_BASE_URL
+    baseURL: API_BASE_URL || '(relative - using proxy)',
+    hasEnvVar: !!import.meta.env.VITE_API_BASE_URL,
+    note: API_BASE_URL ? 'Using direct API URL' : 'Using relative URLs (proxy required)'
   });
 }
 
