@@ -3,7 +3,7 @@ import { Card } from './ui/card'
 import { Slider } from './ui/slider'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { Play, Pause, TrendingUp, Compass } from 'lucide-react'
+import { Play, Pause } from 'lucide-react'
 import NetworkMap from './NetworkMap'
 import StatsPanel from './StatsPanel'
 import AuditLog from './AuditLog'
@@ -194,6 +194,7 @@ export default function PotionNetworkDashboard({ onDataLoad, showMap = true }: D
     if (historicalData.length === 0 || cauldrons.length === 0) return
     
         const currentTimestamp = getCurrentTimestamp()
+        if (!currentTimestamp) return
         const { alerts: newAlerts, updatedState } = monitorRealTime(
           cauldrons,
           historicalData,
@@ -261,16 +262,6 @@ export default function PotionNetworkDashboard({ onDataLoad, showMap = true }: D
     setSelectedDay(day)
   }
 
-  const jumpToDayStart = () => {
-    const currentDay = Math.floor(currentTime / MINUTES_PER_DAY)
-    jumpToDay(currentDay + 1)
-  }
-
-  const jumpToDayEnd = () => {
-    const currentDay = Math.floor(currentTime / MINUTES_PER_DAY)
-    const dayEnd = (currentDay + 1) * MINUTES_PER_DAY - 1
-    setCurrentTime(dayEnd)
-  }
 
   if (loading) {
     return (
@@ -343,7 +334,9 @@ export default function PotionNetworkDashboard({ onDataLoad, showMap = true }: D
     .filter(alert => {
       // Show alerts from last 10 minutes of simulation time
       const alertTime = alert.timestamp.getTime()
-      const currentTimeMs = getCurrentTimestamp().getTime()
+      const currentTimestamp = getCurrentTimestamp()
+      if (!currentTimestamp) return false
+      const currentTimeMs = currentTimestamp.getTime()
       return Math.abs(currentTimeMs - alertTime) < 10 * 60 * 1000
     })
     .sort((a, b) => {

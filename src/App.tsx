@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Button } from './components/ui/button'
-import { Sparkles, Compass, Wand2, Telescope, TrendingUp, Route } from 'lucide-react'
+import { Sparkles, Compass, TrendingUp, Route } from 'lucide-react'
 import GraphsTab from './components/GraphsTab'
 import Dashboard from './components/Dashboard'
 import LandingPage from './components/LandingPage'
-import LiquidEther from './components/LiquidEther'
 import ForecastingTab from './components/ForecastingTab'
 import OptimizationTab from './components/OptimizationTab'
 

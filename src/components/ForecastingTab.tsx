@@ -3,7 +3,7 @@ import { Card } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Slider } from './ui/slider'
-import { RefreshCw, AlertTriangle, CheckCircle, Clock, Calendar, Play, Pause } from 'lucide-react'
+import { RefreshCw, AlertTriangle, CheckCircle, Clock, Play, Pause } from 'lucide-react'
 import { apiService } from '../services/api'
 import type { CauldronDto, HistoricalDataDto } from '../types/api'
 
@@ -97,7 +97,7 @@ export default function ForecastingTab({
   const [allHistoricalData, setAllHistoricalData] = useState<HistoricalDataDto[]>(initialHistoricalData || [])
   const [loading, setLoading] = useState(!initialHistoricalData)
   const [forecasts, setForecasts] = useState<CauldronForecast[]>([])
-  const [timeRangeDays, setTimeRangeDays] = useState<number>(7) // Default to 7 days
+  const [timeRangeDays] = useState<number>(7) // Default to 7 days
   
   // Simulation timeline state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -278,21 +278,7 @@ export default function ForecastingTab({
     }
   }
 
-  // Calculate available time range in days
-  const availableTimeRange = useMemo(() => {
-    if (allHistoricalData.length === 0) return { min: 0, max: 0 }
-    const firstTimestamp = new Date(allHistoricalData[0].timestamp).getTime()
-    const lastTimestamp = new Date(allHistoricalData[allHistoricalData.length - 1].timestamp).getTime()
-    const totalDays = Math.ceil((lastTimestamp - firstTimestamp) / (24 * 60 * 60 * 1000))
-    return { min: 1, max: Math.max(1, totalDays) }
-  }, [allHistoricalData])
 
-  // Format time range display
-  const formatTimeRange = (days: number) => {
-    if (days === availableTimeRange.max) return 'All Data'
-    if (days === 1) return 'Last 1 Day'
-    return `Last ${days} Days`
-  }
 
   const formatTime = (minutes: number): string => {
     if (minutes === Infinity || minutes < 0) return 'N/A'

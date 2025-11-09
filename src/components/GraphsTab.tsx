@@ -3,7 +3,7 @@ import { Card } from './ui/card'
 import { Button } from './ui/button'
 import { ScrollArea } from './ui/scroll-area'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts'
-import { ChevronLeft, ChevronRight, Droplets, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Droplets } from 'lucide-react'
 import type { CauldronDto, HistoricalDataDto, TicketDto } from '../types/api'
 
 interface GraphsTabProps {
@@ -717,7 +717,6 @@ export default function GraphsTab({ cauldrons, historicalData, tickets, dataStar
                 {cauldrons.map((cauldron, idx) => {
                 if (!cauldron.id) return null
                 const isSelected = selectedCauldron === cauldron.id
-                const cauldronKey = `cauldron_${cauldron.id.split('_').pop()?.padStart(3, '0') || '001'}`
                 const color = getCauldronColor(idx)
                 
                 // Extract short cauldron name/number

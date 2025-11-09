@@ -201,7 +201,7 @@ export function assessDiscrepancy(
  * Case C: No Drain but Ticket Exists
  */
 export function checkFalseTicket(
-  cauldronId: string,
+  _cauldronId: string,
   ticket: TicketDto,
   recentDrains: DrainEvent[]
 ): boolean {
@@ -247,7 +247,7 @@ export function checkSlowRefill(
  * Case G: Production Stop
  */
 export function detectProductionStop(
-  cauldronId: string,
+  _cauldronId: string,
   currentLevel: number,
   previousLevel: number,
   timeDiff: number,
@@ -291,7 +291,7 @@ export function checkDailyDiscrepancy(
  * 4. Delivery Integrity Rules
  */
 export function checkDeliveryDelay(
-  courier: CourierDto,
+  _courier: CourierDto,
   ticket: TicketDto,
   network: NetworkDto | null,
   currentTimestamp: Date
@@ -508,7 +508,7 @@ export function monitorRealTime(
         if (matchedTicket) {
           const dailyTicketsMap = updatedState.dailyTickets.get(cauldron.id) || new Map()
           const dayTickets = dailyTicketsMap.get(dateKey) || []
-          if (!dayTickets.find(t => t.ticket_id === matchedTicket.ticket_id)) {
+          if (!dayTickets.find((t: TicketDto) => t.ticket_id === matchedTicket.ticket_id)) {
             dayTickets.push(matchedTicket)
             dailyTicketsMap.set(dateKey, dayTickets)
             updatedState.dailyTickets.set(cauldron.id, dailyTicketsMap)
@@ -671,7 +671,7 @@ export function monitorRealTime(
       const dailyTicketsMap = updatedState.dailyTickets.get(cauldron.id) || new Map()
       totalExpected += dailyDrainsMap.get(dateKey) || 0
       totalTicketed += (dailyTicketsMap.get(dateKey) || []).reduce(
-        (sum, t) => sum + (t.amount_collected || 0),
+        (sum: number, t: TicketDto) => sum + (t.amount_collected || 0),
         0
       )
     })
